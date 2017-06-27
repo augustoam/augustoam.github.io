@@ -12,17 +12,23 @@
 </head>
 
 <body>
-	<nav class="navbar" style="background-color: black;">
-		<h3 style="color: white; text-align: center;">Estatística Aplicada à Computação </h3>
-		<h3 style="color: white; text-align: center;">Trabalho de Augusto Pedrollo e Jean Caio Andreolla</h3>
+	<nav class="navbar" 	>
+		<h3 style="color: black; text-align: center;">Estatística Aplicada à Computação </h3>
+		<h3 style="color: black; text-align: center;">Trabalho de Augusto Pedrollo e Jean Caio Andreolla</h3>
 	</nav>
 	<div class="container">
 		<div class="jumbotron">
 			<div class="row">
-				<div class="col-md-6">
-					<label for="entrada">Dados de Entrada</label>
+				<div class="col-md-12">
+					<label for="entrada">Entrada</label>
 					<textarea class="form-control" id="entrada" rows="9"></textarea>
 
+				<br/>		
+				</div>
+				<div class="col-md-12">
+					<div class="pull-right">
+					<button type="button" class="btn btn-primary">Calcular</button>
+					</div>
 				</div>
 				<div class="col-md-6">
 					<h3 class="text-center">Análise de Dados</h3>
@@ -37,36 +43,37 @@
 						<dd id="mediana">0</dd>
 						<dt>Moda:</dt>
 						<dd id="moda">0</dd>
-						<dt>Desv. Amostral (s):</dt>
+						<dt>Desv. Amostral:</dt>
 						<dd id="desvio_amostral">0</dd>
-						<dt>Desv. Populacional (σ):</dt>
+						<dt>Desv. Populacional:</dt>
 						<dd id="desvio_populacional">0</dd>
 						<dt>Coeficiente de Variação</dt>
 						<dd id="coeficiente_variacao">0</dd>
 					</dl>
 				</div>
+
+				<div class="col-md-6">
+					<h3 class="text-center">Distribuição de Frequência</h3>
+
+					<table class="table freq-table">
+						<thead>
+							<tr>
+								<th data-toggle="tooltip" data-trigger="hover" data-placement="top" data-container="body" ><i>X</i></th>
+								<th data-toggle="tooltip" data-trigger="hover" data-placement="top" data-container="body" >F<sub>i</sub></th>
+								<th data-toggle="tooltip" data-trigger="hover" data-placement="top" data-container="body" ><i>Fi%</i></th>
+								<th data-toggle="tooltip" data-trigger="hover" data-placement="top" data-container="body" ><i>Fac</i></th>
+								<th data-toggle="tooltip" data-trigger="hover" data-placement="top" data-container="body" ><i>Fac%</i></th>
+							</tr>
+						</thead>
+						<tbody id="frequency_table">
+						</tbody>
+					</table>
+				</div>
 			</div>
+
 		</div>
 		<hr>
-		<div class="row">
-			<div class="col-md-12">
-				<h3 class="text-center">Distribuição de Frequência</h3>
-
-				<table class="table freq-table">
-					<thead>
-						<tr>
-							<th data-toggle="tooltip" data-trigger="hover" data-placement="top" data-container="body" title="Grupo de Frequência"><i>X</i><sub>i</sub></th>
-							<th data-toggle="tooltip" data-trigger="hover" data-placement="top" data-container="body" title="Frequência Simples">&fnof;<sub>i</sub></th>
-							<th data-toggle="tooltip" data-trigger="hover" data-placement="top" data-container="body" title="Frequência Relativa">&fnof;<sub>r</sub></th>
-							<th data-toggle="tooltip" data-trigger="hover" data-placement="top" data-container="body" title="Frequência Acumulada"><i>F</i><sub>i</sub></th>
-							<th data-toggle="tooltip" data-trigger="hover" data-placement="top" data-container="body" title="Frequência Acumulada Relativa"><i>F</i><sub>r</sub></th>
-						</tr>
-					</thead>
-					<tbody id="frequency_table">
-					</tbody>
-				</table>
-			</div>
-		</div>
+		
 	</div>
 </body>
 
