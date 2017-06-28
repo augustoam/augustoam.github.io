@@ -28768,7 +28768,7 @@ var _chart = __webpack_require__(122);
 
 var _chart2 = _interopRequireDefault(_chart);
 
-__webpack_require__(121);
+__webpack_require__(174);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -28784,13 +28784,7 @@ window.$ = __webpack_provided_window_dot_jQuery = jQuery;
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 121 */
-/***/ (function(module, exports) {
-
-"use strict";
-throw new Error("Module build failed: SyntaxError: C:/faculdade/ESTATISTICA/URI-estatistica/assets/javascripts/input.js: Unexpected token, expected , (24:0)\n\n\u001b[0m \u001b[90m 22 | \u001b[39m\n \u001b[90m 23 | \u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 24 | \u001b[39m\u001b[36mfunction\u001b[39m frequencyModule(vals) {\n \u001b[90m    | \u001b[39m\u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 25 | \u001b[39m  let totalSum \u001b[33m=\u001b[39m vals\u001b[33m.\u001b[39mreduce((a\u001b[33m,\u001b[39m b) \u001b[33m=>\u001b[39m { \u001b[36mreturn\u001b[39m a \u001b[33m+\u001b[39m b })\u001b[33m;\u001b[39m\n \u001b[90m 26 | \u001b[39m  let media \u001b[33m=\u001b[39m totalSum \u001b[33m/\u001b[39m vals\u001b[33m.\u001b[39mlength\u001b[33m;\u001b[39m\n \u001b[90m 27 | \u001b[39m  let intervals \u001b[33m=\u001b[39m calcIntervals(vals)\u001b[33m;\u001b[39m\u001b[0m\n");
-
-/***/ }),
+/* 121 */,
 /* 122 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -41530,7 +41524,231 @@ module.exports = webpackContext;
 webpackContext.id = 169;
 
 /***/ }),
-/* 170 */,
+/* 170 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var __WEBPACK_AMD_DEFINE_RESULT__;/* global window, exports, define */
+
+!function() {
+    'use strict'
+
+    var re = {
+        not_string: /[^s]/,
+        not_bool: /[^t]/,
+        not_type: /[^T]/,
+        not_primitive: /[^v]/,
+        number: /[diefg]/,
+        numeric_arg: /[bcdiefguxX]/,
+        json: /[j]/,
+        not_json: /[^j]/,
+        text: /^[^\x25]+/,
+        modulo: /^\x25{2}/,
+        placeholder: /^\x25(?:([1-9]\d*)\$|\(([^\)]+)\))?(\+)?(0|'[^$])?(-)?(\d+)?(?:\.(\d+))?([b-gijostTuvxX])/,
+        key: /^([a-z_][a-z_\d]*)/i,
+        key_access: /^\.([a-z_][a-z_\d]*)/i,
+        index_access: /^\[(\d+)\]/,
+        sign: /^[\+\-]/
+    }
+
+    function sprintf(key) {
+        // `arguments` is not an array, but should be fine for this call
+        return sprintf_format(sprintf_parse(key), arguments)
+    }
+
+    function vsprintf(fmt, argv) {
+        return sprintf.apply(null, [fmt].concat(argv || []))
+    }
+
+    function sprintf_format(parse_tree, argv) {
+        var cursor = 1, tree_length = parse_tree.length, arg, output = '', i, k, match, pad, pad_character, pad_length, is_positive, sign
+        for (i = 0; i < tree_length; i++) {
+            if (typeof parse_tree[i] === 'string') {
+                output += parse_tree[i]
+            }
+            else if (Array.isArray(parse_tree[i])) {
+                match = parse_tree[i] // convenience purposes only
+                if (match[2]) { // keyword argument
+                    arg = argv[cursor]
+                    for (k = 0; k < match[2].length; k++) {
+                        if (!arg.hasOwnProperty(match[2][k])) {
+                            throw new Error(sprintf('[sprintf] property "%s" does not exist', match[2][k]))
+                        }
+                        arg = arg[match[2][k]]
+                    }
+                }
+                else if (match[1]) { // positional argument (explicit)
+                    arg = argv[match[1]]
+                }
+                else { // positional argument (implicit)
+                    arg = argv[cursor++]
+                }
+
+                if (re.not_type.test(match[8]) && re.not_primitive.test(match[8]) && arg instanceof Function) {
+                    arg = arg()
+                }
+
+                if (re.numeric_arg.test(match[8]) && (typeof arg !== 'number' && isNaN(arg))) {
+                    throw new TypeError(sprintf('[sprintf] expecting number but found %T', arg))
+                }
+
+                if (re.number.test(match[8])) {
+                    is_positive = arg >= 0
+                }
+
+                switch (match[8]) {
+                    case 'b':
+                        arg = parseInt(arg, 10).toString(2)
+                        break
+                    case 'c':
+                        arg = String.fromCharCode(parseInt(arg, 10))
+                        break
+                    case 'd':
+                    case 'i':
+                        arg = parseInt(arg, 10)
+                        break
+                    case 'j':
+                        arg = JSON.stringify(arg, null, match[6] ? parseInt(match[6]) : 0)
+                        break
+                    case 'e':
+                        arg = match[7] ? parseFloat(arg).toExponential(match[7]) : parseFloat(arg).toExponential()
+                        break
+                    case 'f':
+                        arg = match[7] ? parseFloat(arg).toFixed(match[7]) : parseFloat(arg)
+                        break
+                    case 'g':
+                        arg = match[7] ? String(Number(arg.toPrecision(match[7]))) : parseFloat(arg)
+                        break
+                    case 'o':
+                        arg = (parseInt(arg, 10) >>> 0).toString(8)
+                        break
+                    case 's':
+                        arg = String(arg)
+                        arg = (match[7] ? arg.substring(0, match[7]) : arg)
+                        break
+                    case 't':
+                        arg = String(!!arg)
+                        arg = (match[7] ? arg.substring(0, match[7]) : arg)
+                        break
+                    case 'T':
+                        arg = Object.prototype.toString.call(arg).slice(8, -1).toLowerCase()
+                        arg = (match[7] ? arg.substring(0, match[7]) : arg)
+                        break
+                    case 'u':
+                        arg = parseInt(arg, 10) >>> 0
+                        break
+                    case 'v':
+                        arg = arg.valueOf()
+                        arg = (match[7] ? arg.substring(0, match[7]) : arg)
+                        break
+                    case 'x':
+                        arg = (parseInt(arg, 10) >>> 0).toString(16)
+                        break
+                    case 'X':
+                        arg = (parseInt(arg, 10) >>> 0).toString(16).toUpperCase()
+                        break
+                }
+                if (re.json.test(match[8])) {
+                    output += arg
+                }
+                else {
+                    if (re.number.test(match[8]) && (!is_positive || match[3])) {
+                        sign = is_positive ? '+' : '-'
+                        arg = arg.toString().replace(re.sign, '')
+                    }
+                    else {
+                        sign = ''
+                    }
+                    pad_character = match[4] ? match[4] === '0' ? '0' : match[4].charAt(1) : ' '
+                    pad_length = match[6] - (sign + arg).length
+                    pad = match[6] ? (pad_length > 0 ? pad_character.repeat(pad_length) : '') : ''
+                    output += match[5] ? sign + arg + pad : (pad_character === '0' ? sign + pad + arg : pad + sign + arg)
+                }
+            }
+        }
+        return output
+    }
+
+    var sprintf_cache = Object.create(null)
+
+    function sprintf_parse(fmt) {
+        if (sprintf_cache[fmt]) {
+            return sprintf_cache[fmt]
+        }
+
+        var _fmt = fmt, match, parse_tree = [], arg_names = 0
+        while (_fmt) {
+            if ((match = re.text.exec(_fmt)) !== null) {
+                parse_tree.push(match[0])
+            }
+            else if ((match = re.modulo.exec(_fmt)) !== null) {
+                parse_tree.push('%')
+            }
+            else if ((match = re.placeholder.exec(_fmt)) !== null) {
+                if (match[2]) {
+                    arg_names |= 1
+                    var field_list = [], replacement_field = match[2], field_match = []
+                    if ((field_match = re.key.exec(replacement_field)) !== null) {
+                        field_list.push(field_match[1])
+                        while ((replacement_field = replacement_field.substring(field_match[0].length)) !== '') {
+                            if ((field_match = re.key_access.exec(replacement_field)) !== null) {
+                                field_list.push(field_match[1])
+                            }
+                            else if ((field_match = re.index_access.exec(replacement_field)) !== null) {
+                                field_list.push(field_match[1])
+                            }
+                            else {
+                                throw new SyntaxError('[sprintf] failed to parse named argument key')
+                            }
+                        }
+                    }
+                    else {
+                        throw new SyntaxError('[sprintf] failed to parse named argument key')
+                    }
+                    match[2] = field_list
+                }
+                else {
+                    arg_names |= 2
+                }
+                if (arg_names === 3) {
+                    throw new Error('[sprintf] mixing positional and named placeholders is not (yet) supported')
+                }
+                parse_tree.push(match)
+            }
+            else {
+                throw new SyntaxError('[sprintf] unexpected placeholder')
+            }
+            _fmt = _fmt.substring(match[0].length)
+        }
+        return sprintf_cache[fmt] = parse_tree
+    }
+
+    /**
+     * export to either browser or node.js
+     */
+    /* eslint-disable quote-props */
+    if (true) {
+        exports['sprintf'] = sprintf
+        exports['vsprintf'] = vsprintf
+    }
+    if (typeof window !== 'undefined') {
+        window['sprintf'] = sprintf
+        window['vsprintf'] = vsprintf
+
+        if (true) {
+            !(__WEBPACK_AMD_DEFINE_RESULT__ = function() {
+                return {
+                    'sprintf': sprintf,
+                    'vsprintf': vsprintf
+                }
+            }.call(exports, __webpack_require__, exports, module),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__))
+        }
+    }
+    /* eslint-enable quote-props */
+}()
+
+
+/***/ }),
 /* 171 */
 /***/ (function(module, exports) {
 
@@ -41565,6 +41783,263 @@ module.exports = function(module) {
 __webpack_require__(119);
 module.exports = __webpack_require__(120);
 
+
+/***/ }),
+/* 173 */,
+/* 174 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function($) {
+
+var _sprintfJs = __webpack_require__(170);
+
+__webpack_require__(2);
+
+$('[data-toggle=tooltip]').tooltip();
+
+document.getElementById("botao").addEventListener("click", calcula);
+
+function calcula() {
+  var $entrada = document.getElementById('entrada');
+  var inputVals = $entrada.value.trim().split(/\s+/).map(Number);
+  var sortedVals = inputVals.slice(0).sort(function (a, b) {
+    return parseInt(a || 0, 10) - parseInt(b || 0, 10);
+  });
+  frequencyModule(inputVals);
+  infoModule(sortedVals);
+}
+
+function frequencyModule(vals) {
+  var totalSum = vals.reduce(function (a, b) {
+    return a + b;
+  });
+  var media = totalSum / vals.length;
+  var intervals = calcIntervals(vals);
+
+  var tableInfo = intervals.map(function (interval) {
+    var min = interval.min,
+        max = interval.max;
+
+    return {
+      interval: (0, _sprintfJs.sprintf)('%03d ├─ %03d', min, max),
+      frequency: vals.map(function (n) {
+        return n < max && n >= min ? 1 : 0;
+      }).reduce(function (a, b) {
+        return a + b;
+      })
+    };
+  });
+
+  var totalFrequency = tableInfo.map(function (num) {
+    return num.frequency;
+  }).reduce(function (a, b) {
+    return a + b;
+  });
+  var acumulatedFrequency = 0;
+
+  tableInfo.map(function (e) {
+    var frequencyPercent = Math.min(e.frequency * 100 / totalFrequency, 100.0);
+    acumulatedFrequency += e.frequency;
+    var acumulatedFrequencyPercent = Math.min(acumulatedFrequency * 100 / totalFrequency, 100);
+
+    return $.extend(e, {
+      frequencyPercent: frequencyPercent,
+      acumulatedFrequency: acumulatedFrequency,
+      acumulatedFrequencyPercent: acumulatedFrequencyPercent
+    });
+  });
+
+  var tableHTML = [];
+
+  var _iteratorNormalCompletion = true;
+  var _didIteratorError = false;
+  var _iteratorError = undefined;
+
+  try {
+    for (var _iterator = tableInfo[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+      var tableRow = _step.value;
+
+      tableHTML.push((0, _sprintfJs.sprintf)('\n    <tr>\n      <td>%3s</td>\n      <td>%3d</td>\n      <td>%.2f</td>\n      <td>%d</td>\n      <td>%.2f</td>\n    </tr>\n    ', tableRow.interval, tableRow.frequency, tableRow.frequencyPercent, tableRow.acumulatedFrequency, tableRow.acumulatedFrequencyPercent));
+    }
+  } catch (err) {
+    _didIteratorError = true;
+    _iteratorError = err;
+  } finally {
+    try {
+      if (!_iteratorNormalCompletion && _iterator.return) {
+        _iterator.return();
+      }
+    } finally {
+      if (_didIteratorError) {
+        throw _iteratorError;
+      }
+    }
+  }
+
+  tableHTML.push((0, _sprintfJs.sprintf)('\n    <tr>\n      <td><b>Total</b> %d</td>\n      <td>%d</td>\n      <td>%.2f</td>\n      <td>-</td>\n      <td>-</td>\n    </tr>\n  ', totalSum, totalFrequency, 100.0));
+
+  document.getElementById('frequency_table').innerHTML = tableHTML.join("\n");
+}
+
+function calcIntervals(vals) {
+  var intervals = vals.slice(0).sort(function (a, b) {
+    return parseInt(a || 0, 10) - parseInt(b || 0, 10);
+  });
+  var maxNum = intervals[intervals.length - 1];
+  var minNum = intervals[0];
+  var groupCount = Math.round(1 + 3.22 * Math.log10(intervals.length));
+
+  var groupLength = (maxNum - minNum) / groupCount;
+  groupLength = parseInt(groupLength) + 1;
+  var result = [],
+      n = minNum;
+
+  for (var i = 0; i < groupCount; i++) {
+    result[i] = { min: Math.round(n), max: Math.round(Math.min(n + groupLength)) };
+    n += groupLength;
+  }
+
+  return result;
+}
+
+function infoModule(vals) {
+  vals = vals || [];
+
+  document.getElementById('conjunto').innerHTML = (0, _sprintfJs.sprintf)(' %s ', vals.join(', '));
+
+  var media = calculaMediaAritmetica(vals);
+
+  document.getElementById('media_aritmetica').innerHTML = media;
+
+  document.getElementById('media_geometrica').innerHTML = calculaMediaGeometrica(vals);
+
+  document.getElementById('mediana').innerHTML = calculaMediana(vals);
+
+  document.getElementById('moda').innerHTML = calculaModa(vals);
+
+  var desvios = calculaDesvios(vals, media);
+
+  document.getElementById('desvio_populacional').innerHTML = (0, _sprintfJs.sprintf)("%.2f", desvios.populacional);
+
+  document.getElementById('desvio_amostral').innerHTML = (0, _sprintfJs.sprintf)("%.2f", desvios.amostral);
+
+  document.getElementById('coeficiente_variacao').innerHTML = calculaCoeficienteVariacao(desvios.amostral, media);
+}
+
+function calculaDesvios(vals, media) {
+  var cals = vals.map(function (num) {
+    return Math.pow(Math.abs(num - media), 2.0);
+  }).reduce(function (a, b) {
+    return a + b;
+  });
+
+  return { amostral: Math.pow(cals / vals.length, 0.5), populacional: Math.pow(cals / (vals.length - 1), 0.5) };
+}
+
+function calculaCoeficienteVariacao(desvio, media) {
+  return (0, _sprintfJs.sprintf)('%.2f', desvio / media * 100.0);
+}
+
+function calculaMediaAritmetica(vals) {
+  return (0, _sprintfJs.sprintf)('%.2f', vals.reduce(function (a, b) {
+    return a + b;
+  }) / vals.length);
+}
+
+function calculaMediaGeometrica(vals) {
+  var value = vals.reduce(function (a, b) {
+    return a * b;
+  });
+
+  return (0, _sprintfJs.sprintf)('%.2f', Math.pow(value, 1 / vals.length));
+}
+
+function calculaMediana(vals) {
+  var mid = Math.floor(vals.length / 2) + vals.length % 2 - 1;
+
+  if (vals.length % 2 == 0) {
+    return (0, _sprintfJs.sprintf)('%.2f', (vals[mid] + vals[mid + 1]) / 2);
+  } else {
+    return vals[mid];
+  }
+}
+
+function calculaModa(vals) {
+  var min = Math.min.apply(null, vals);
+  var max = Math.max.apply(null, vals);
+  var counted = [];
+  var answer = [],
+      maxModa = -1;
+
+  for (var i = min; i <= max; i++) {
+    counted[i] = { val: i, count: 0 };
+  }
+
+  var _iteratorNormalCompletion2 = true;
+  var _didIteratorError2 = false;
+  var _iteratorError2 = undefined;
+
+  try {
+    for (var _iterator2 = vals[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+      var num = _step2.value;
+
+      counted[num].count++;
+    }
+  } catch (err) {
+    _didIteratorError2 = true;
+    _iteratorError2 = err;
+  } finally {
+    try {
+      if (!_iteratorNormalCompletion2 && _iterator2.return) {
+        _iterator2.return();
+      }
+    } finally {
+      if (_didIteratorError2) {
+        throw _iteratorError2;
+      }
+    }
+  }
+
+  var sortedCount = counted.sort(function (a, b) {
+    return a.count - b.count;
+  }).reverse().filter(function (a) {
+    return a.hasOwnProperty('val');
+  });
+
+  if (sortedCount.length > 1) {
+    var _iteratorNormalCompletion3 = true;
+    var _didIteratorError3 = false;
+    var _iteratorError3 = undefined;
+
+    try {
+      for (var _iterator3 = sortedCount[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+        var _num = _step3.value;
+
+        if (_num.count > 1 && _num.count >= maxModa) {
+          answer.push(_num.val);
+          maxModa = _num.count;
+        }
+      }
+    } catch (err) {
+      _didIteratorError3 = true;
+      _iteratorError3 = err;
+    } finally {
+      try {
+        if (!_iteratorNormalCompletion3 && _iterator3.return) {
+          _iterator3.return();
+        }
+      } finally {
+        if (_didIteratorError3) {
+          throw _iteratorError3;
+        }
+      }
+    }
+  }
+
+  return answer.length > 0 ? answer.join(', ') : 'Amodal';
+}
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ })
 /******/ ]);
